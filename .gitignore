@@ -158,3 +158,19 @@ detox/maestro/.maestro-test-env*.bak
 # Maestro takeScreenshot output when a flow is run locally without
 # --test-output-dir; the name is the flow's own label, so match any of them.
 detox/maestro/*.png
+
+# Signing material and service credentials must never reach the public fork.
+*.p8
+*.p12
+*.mobileprovision
+*.provisionprofile
+ios/GoogleService-Info.plist
+ios/**/GoogleService-Info.plist
+# android/app/google-services.json is upstream's tracked file and stays tracked;
+# ignore any other copies.
+**/google-services.json
+!android/app/google-services.json
+
+# Local planning notes.
+PLAN.md
+**/PLAN.md
