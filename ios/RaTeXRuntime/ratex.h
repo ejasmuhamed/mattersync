@@ -1,0 +1,1 @@
+../../node_modules/ratex-react-native/ios/RaTeX.xcframework/ios-arm64/Headers/ratex.h

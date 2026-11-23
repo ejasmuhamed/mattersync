@@ -136,7 +136,7 @@ jobs:
           scope: ${{ needs.compute-build-fingerprint.outputs.cache-scope }}
           platform: ios
           bucket: ${{ env.BUILD_CACHE_BUCKET }}
-          cache-path: 'Mattermost-simulator-*.app.zip'
+          cache-path: 'Mattersync-simulator-*.app.zip'
           mode: restore
 
       - name: Skip build if cache hit
@@ -164,16 +164,16 @@ jobs:
 
       # Uploaded from the cache or a fresh build, for the lanes to download.
       - name: Upload iOS Simulator Build
-        if: always() && hashFiles('Mattermost-simulator-*.app.zip') != ''
+        if: always() && hashFiles('Mattersync-simulator-*.app.zip') != ''
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-build-simulator-${{ github.run_id }}
-          path: Mattermost-simulator-*.app.zip
+          path: Mattersync-simulator-*.app.zip
           # A "Re-run all jobs" builds again under the same run id.
           overwrite: true
 
       - name: Save iOS build to S3
-        if: env.SKIP_BUILD != 'true' && hashFiles('Mattermost-simulator-*.app.zip') != ''
+        if: env.SKIP_BUILD != 'true' && hashFiles('Mattersync-simulator-*.app.zip') != ''
         continue-on-error: true
         uses: ./.github/actions/s3-build-cache
         env:
@@ -184,7 +184,7 @@ jobs:
           scope: ${{ needs.compute-build-fingerprint.outputs.cache-scope }}
           platform: ios
           bucket: ${{ env.BUILD_CACHE_BUCKET }}
-          cache-path: 'Mattermost-simulator-*.app.zip'
+          cache-path: 'Mattersync-simulator-*.app.zip'
           mode: save
 
   build-android-apk:

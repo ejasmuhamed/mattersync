@@ -3,18 +3,16 @@
 
 import React from 'react';
 
-import CompassIcon from '@components/compass_icon';
+import BrandIcon from '@components/brand_icon';
 import {View as ViewConstants} from '@constants';
 
 type Props = {
     theme: Theme;
 }
 
-const SystemAvatar = ({theme}: Props) => {
+const SystemAvatar: React.FC<Props> = () => {
     return (
-        <CompassIcon
-            name='mattermost'
-            color={theme.centerChannelColor}
+        <BrandIcon
             size={ViewConstants.PROFILE_PICTURE_SIZE}
         />
     );

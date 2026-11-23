@@ -5,6 +5,8 @@ import {defineMessages} from 'react-intl';
 import {Alert} from 'react-native';
 import Share from 'react-native-share';
 
+import Brand from '@assets/branding/brand.json';
+import Config from '@assets/config.json';
 import {pathWithPrefix} from '@utils/file';
 import {EXCLUDE_THIS_APP_FROM_FILE_SHARE} from '@utils/share_targets';
 
@@ -25,7 +27,7 @@ export const shareLogs = async (metadata: ReportAProblemMetadata, siteName: stri
         const logPaths = await TurboLogger.getLogPaths();
         const attachments = excludeLogs ? [] : logPaths.map((path) => pathWithPrefix('file://', path));
         await Share.open({
-            subject: `Problem with ${siteName || 'Mattermost'} mobile app`,
+            subject: `Problem with ${siteName || Brand.name} mobile app`,
             email: reportAProblemMail,
             failOnCancel: false,
             urls: attachments.length ? attachments : undefined,
@@ -43,7 +45,7 @@ export const emailLogs = async (metadata: ReportAProblemMetadata, siteName: stri
         const attachments = excludeLogs ? [] : logPaths.map((path) => pathWithPrefix('file://', path));
         await Share.shareSingle({
             social: Share.Social.EMAIL as any, // The type is not correct in the library
-            subject: `Problem with ${siteName || 'Mattermost'} mobile app`,
+            subject: `Problem with ${siteName || Brand.name} mobile app`,
             email: reportAProblemMail,
             urls: attachments.length ? attachments : undefined,
             message: buildEmailBody(metadata),
@@ -53,8 +55,8 @@ export const emailLogs = async (metadata: ReportAProblemMetadata, siteName: stri
     }
 };
 
-export const getDefaultReportAProblemLink = (isLicensed: boolean) => {
-    return isLicensed ? 'https://mattermost.com/pl/report_a_problem_licensed' : 'https://mattermost.com/pl/report_a_problem_unlicensed';
+export const getDefaultReportAProblemLink: (isLicensed: boolean) => string = () => {
+    return Config.SupportURL;
 };
 
 export function metadataToString(metadata: ReportAProblemMetadata): string {

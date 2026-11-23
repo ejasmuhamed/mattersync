@@ -1,6 +1,6 @@
 {
   "name": "Mattermost",
-  "displayName": "Mattermost",
+  "displayName": "Mattersync",
   "expo": {
     "scheme": "mattermost",
     "plugins": [

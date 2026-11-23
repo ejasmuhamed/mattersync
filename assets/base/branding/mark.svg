@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 256 256">
+  <title>Mattersync</title>
+  <desc>Two overlapping conversation bubbles with a voice waveform. Original Mattersync app artwork.</desc>
+  <rect data-role="background" width="256" height="256" fill="#123B38"/>
+  <rect x="44" y="48" width="142" height="90" rx="26" fill="#FFFFFF"/>
+  <polygon points="68,128 68,158 104,128" fill="#FFFFFF"/>
+  <rect x="84" y="112" width="132" height="88" rx="26" fill="#52E0C5" stroke="#123B38" stroke-width="8"/>
+  <polygon points="160,192 190,216 190,184" fill="#52E0C5"/>
+  <rect data-role="detail" x="116" y="145" width="10" height="22" rx="5" fill="#123B38"/>
+  <rect data-role="detail" x="141" y="136" width="10" height="40" rx="5" fill="#123B38"/>
+  <rect data-role="detail" x="166" y="145" width="10" height="22" rx="5" fill="#123B38"/>
+</svg>

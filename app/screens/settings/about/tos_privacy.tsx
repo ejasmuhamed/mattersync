@@ -42,8 +42,8 @@ const TosPrivacyContainer = ({config, onPressTOS, onPressPrivacyPolicy}: TosPriv
         <>
             {hasTermsOfServiceLink && (
                 <FormattedText
-                    id={'mobile.tos_link'}
-                    defaultMessage='Terms of Service'
+                    id='mattersync.server_terms_link'
+                    defaultMessage='Server Terms of Service'
                     style={style.noticeLink}
                     onPress={onPressTOS}
                     testID='about.terms_of_service'
@@ -56,8 +56,8 @@ const TosPrivacyContainer = ({config, onPressTOS, onPressPrivacyPolicy}: TosPriv
             )}
             {hasPrivacyPolicyLink && (
                 <FormattedText
-                    id={'mobile.privacy_link'}
-                    defaultMessage='Privacy Policy'
+                    id='mattersync.server_privacy_link'
+                    defaultMessage='Server Privacy Policy'
                     style={style.noticeLink}
                     onPress={onPressPrivacyPolicy}
                     testID='about.privacy_policy'

@@ -130,11 +130,11 @@ describe('emailLogs', () => {
         }));
     });
 
-    it('should fall back to Mattermost in subject when siteName is undefined', async () => {
+    it('should fall back to Mattersync in subject when siteName is undefined', async () => {
         await emailLogs(metadata, undefined, 'support@example.com', false);
 
         expect(Share.shareSingle).toHaveBeenCalledWith(expect.objectContaining({
-            subject: 'Problem with Mattermost mobile app',
+            subject: 'Problem with Mattersync mobile app',
         }));
     });
 
@@ -191,14 +191,14 @@ describe('emailLogs', () => {
 });
 
 describe('getDefaultReportAProblemLink', () => {
-    it('should return licensed link when isLicensed is true', () => {
+    it('should route licensed-server app support to Bytsolv', () => {
         const link = getDefaultReportAProblemLink(true);
-        expect(link).toBe('https://mattermost.com/pl/report_a_problem_licensed');
+        expect(link).toBe('mailto:support@bytsolv.com');
     });
 
-    it('should return unlicensed link when isLicensed is false', () => {
+    it('should route unlicensed-server app support to Bytsolv', () => {
         const link = getDefaultReportAProblemLink(false);
-        expect(link).toBe('https://mattermost.com/pl/report_a_problem_unlicensed');
+        expect(link).toBe('mailto:support@bytsolv.com');
     });
 });
 

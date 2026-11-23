@@ -34,6 +34,7 @@ class AppDelegate: ExpoAppDelegate, OrientationLockable {
 
     var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
     var reactNativeFactory: RCTReactNativeFactory?
+    private var initialLaunchOptions: [UIApplication.LaunchOptionsKey: Any]?
 
     private var databaseLockProtectionToken: String?
 
@@ -117,23 +118,11 @@ class AppDelegate: ExpoAppDelegate, OrientationLockable {
 
         reactNativeDelegate = delegate
         reactNativeFactory = factory
-
-        #if os(iOS) || os(tvOS)
-        window = UIWindow(frame: UIScreen.main.bounds)
-        factory.startReactNative(
-            withModuleName: "Mattermost",
-            in: window,
-            launchOptions: launchOptions
-        )
-        #endif
+        initialLaunchOptions = launchOptions
 
         let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
 
         os_log("Mattermost started!!")
-
-        if let factory = reactNativeFactory {
-            PasteInputModule.setup(factory.rootViewFactory)
-        }
 
         #if canImport(mattermost_intune)
         // Restore enrollments if needed (silent, non-blocking)
@@ -141,6 +130,36 @@ class AppDelegate: ExpoAppDelegate, OrientationLockable {
         #endif
 
         return result
+    }
+
+    // UIKit supplies the window scene after application launch. Creating the window here
+    // keeps React Native attached to the visible scene on iOS 27 and earlier versions.
+    func connectWindow(to scene: UIWindowScene, options: UIScene.ConnectionOptions) -> UIWindow? {
+        guard let factory = reactNativeFactory else {
+            os_log("Cannot connect window before React Native factory initialization")
+            return nil
+        }
+
+        var launchOptions = initialLaunchOptions ?? [:]
+        if let context = options.urlContexts.first {
+            launchOptions[.url] = context.url
+            launchOptions[.sourceApplication] = context.options.sourceApplication
+        }
+        if let activity = options.userActivities.first(where: { $0.activityType == NSUserActivityTypeBrowsingWeb }) {
+            launchOptions[.userActivityDictionary] = [
+                "UIApplicationLaunchOptionsUserActivityTypeKey": activity.activityType,
+                "UIApplicationLaunchOptionsUserActivityKey": activity
+            ]
+        }
+        if let response = options.notificationResponse {
+            launchOptions[.remoteNotification] = response.notification.request.content.userInfo
+        }
+
+        let sceneWindow = UIWindow(windowScene: scene)
+        window = sceneWindow
+        factory.startReactNative(withModuleName: "Mattermost", in: sceneWindow, launchOptions: launchOptions)
+        PasteInputModule.setup(factory.rootViewFactory)
+        return sceneWindow
     }
 
     // MARK: - Remote Notifications
@@ -226,7 +245,9 @@ class AppDelegate: ExpoAppDelegate, OrientationLockable {
         if handleMSALURL(url) {
             return true
         }
-        return RCTLinkingManager.application(app, open: url, options: options)
+        let handledByExpo = super.application(app, open: url, options: options)
+        let handledByReact = RCTLinkingManager.application(app, open: url, options: options)
+        return handledByExpo || handledByReact
     }
 
     func application(
@@ -257,7 +278,9 @@ class AppDelegate: ExpoAppDelegate, OrientationLockable {
         continue userActivity: NSUserActivity,
         restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
-        return RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
+        let handledByExpo = super.application(application, continue: userActivity, restorationHandler: restorationHandler)
+        let handledByReact = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
+        return handledByExpo || handledByReact
     }
 
     // MARK: - App Lifecycle
@@ -330,6 +353,58 @@ class AppDelegate: ExpoAppDelegate, OrientationLockable {
 
     @objc private func sendFindChannels(_ sender: UIKeyCommand) {
         MattermostHardwareKeyboardWrapper.findChannels()
+    }
+}
+
+// Scene events are forwarded through the app delegate so Expo subscribers, authentication
+// callbacks, and the existing database background protection keep receiving lifecycle events.
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+
+    private var appDelegate: AppDelegate? {
+        UIApplication.shared.delegate as? AppDelegate
+    }
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        window = appDelegate?.connectWindow(to: windowScene, options: connectionOptions)
+        routeURLs(connectionOptions.urlContexts)
+        for activity in connectionOptions.userActivities {
+            self.scene(scene, continue: activity)
+        }
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        appDelegate?.applicationDidBecomeActive(UIApplication.shared)
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        appDelegate?.applicationWillResignActive(UIApplication.shared)
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        appDelegate?.applicationWillEnterForeground(UIApplication.shared)
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        appDelegate?.applicationDidEnterBackground(UIApplication.shared)
+    }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        routeURLs(URLContexts)
+    }
+
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        _ = appDelegate?.application(UIApplication.shared, continue: userActivity, restorationHandler: { _ in })
+    }
+
+    private func routeURLs(_ contexts: Set<UIOpenURLContext>) {
+        for context in contexts {
+            var options: [UIApplication.OpenURLOptionsKey: Any] = [.openInPlace: context.options.openInPlace]
+            options[.sourceApplication] = context.options.sourceApplication
+            options[.annotation] = context.options.annotation
+            _ = appDelegate?.application(UIApplication.shared, open: context.url, options: options)
+        }
     }
 }
 

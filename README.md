@@ -1,72 +1,48 @@
-# Mattermost Mobile v2
+# Mattersync
 
-- **Minimum Server versions:** Current ESR version (11.7.0+)
-- **Supported iOS versions:** 18.0+
-- **Supported Android versions:** 11.0+
+![Mattersync icon](assets/base/branding/preview.png)
 
-Mattermost is an open source Slack-alternative used by thousands of companies around the world in 21 languages. Learn more at [https://mattermost.com](https://mattermost.com).
+Mattersync is an independently maintained iOS and Android client for Mattermost servers, published by **Bytsolv (Bytsolv Digital Transformations Private Limited)**.
 
-You can download our apps from the [App Store](https://mattermost.com/mattermost-ios-app/) or [Google Play Store](https://mattermost.com/mattermost-android-app/), or [build them yourself](https://developers.mattermost.com/contribute/mobile/build-your-own/). 
+Connect to your team's server for channels, direct messages, threads, file sharing, calls, and AAC `.m4a` voice-message attachments. The message composer includes a microphone button with recording, cancellation, and attachment controls. An account on a compatible server is required.
 
-We plan on releasing monthly updates with new features - check the [changelog](https://github.com/mattermost/mattermost-mobile/blob/master/CHANGELOG.md) for what features are currently supported! 
+Support and privacy contact: **support@bytsolv.com** · [Bytsolv](https://bytsolv.com)
 
-**Important:** If you self-compile the Mattermost Mobile apps you also need to deploy your own [Mattermost Push Notification Service](https://github.com/mattermost/mattermost-push-proxy/releases). 
+## Distribution status
 
-# How to Contribute
+This repository is a modified client under development. Public distribution is **pending branding clearance and publisher review**: existing commercial software already uses the name MatterSync. The name and original icon in this source tree do not establish trademark availability or store approval. See [branding and release requirements](docs/branding.md).
 
-### Testing
+The [privacy notice](docs/privacy.md) is a draft for publisher review. Publish the reviewed notice at a public URL before store submission. Fresh screenshots and device testing of the branded app are also required.
 
-To help with testing app updates before they're released, you can:
+## Development
 
-1. Sign up to be a beta tester
-   - [Android](https://play.google.com/apps/testing/com.mattermost.rnbeta)
-   - [iOS](https://testflight.apple.com/join/Q7Rx7K9P) - Open this link from your iOS device
-2. Install the `Mattermost Beta` app. New updates in the Beta app are released periodically. You will receive a notification when the new updates are available.
-3. File any bugs you find by filing a [GitHub issue](https://github.com/mattermost/mattermost-mobile/issues) with:
-   - Device information
-   - Repro steps
-   - Observed behavior (including screenshot / video when possible)
-   - Expected behavior
-4. (Optional) [Sign up for our team site](https://community.mattermost.com/signup_user_complete/?id=codoy5s743rq5mk18i7u5ksz7e&md=link&sbr=su)
-   - Join the [Native Mobile Apps channel](https://community.mattermost.com/core/channels/native-mobile-apps) to see what's new and discuss feedback with other contributors and the core team
-   
-You can leave the Beta testing program at any time:
-- On Android, [click this link](https://play.google.com/apps/testing/com.mattermost.rnbeta) while logged in with your Google Play email address used to opt-in for the Beta program, then click **Leave the program**. 
-- On iOS, access the `Mattermost Beta` app page in TestFlight and click **Stop Testing**.
+Use the Node/npm versions specified in `package.json`. Native builds require the platform toolchains and your own signing/provisioning configuration.
 
-### Contribute Code 
+```sh
+npm ci
+npm start
+# In another terminal:
+npm run ios
+# or
+npm run android
+```
 
-1. Look in [GitHub issues](https://mattermost.com/pl/help-wanted-mattermost-mobile) for issues marked as [Help Wanted]
-2. Comment to let people know you’re working on it
-3. Follow [these instructions](https://developers.mattermost.com/contribute/mobile/developer-setup/) to set up your developer environment
-4. Join the [Native Mobile Apps channel](https://community.mattermost.com/core/channels/native-mobile-apps) on our team site to ask questions
+Run `npm run check` for lint and TypeScript validation. Tests are documented in [the repository testing guide](docs/testing_guide.md). Follow `AGENTS.md` and `CLAUDE.md` for the development and device-test workflow.
 
+## Branding assets
 
+The editable icon is [mark.svg](assets/base/branding/mark.svg). Brand and publisher settings live in [brand.json](assets/base/branding/brand.json).
 
-# Frequently Asked Questions
+Regenerate native icons, adaptive/themed and notification icons, light/dark launch images, in-app images, and store graphics with:
 
-### How is data handled on mobile devices after a user account is deactivated?
+```sh
+python3 scripts/generate-brand-assets.py
+```
 
-App data is wiped from the device when a user logs out of the app. If the user is logged in when the account is deactivated, then within one minute the system logs the user out, and as a result all app data is wiped from the device.
+The generator requires Pillow. After changing native assets, rebuild the app; a JavaScript reload does not update an installed app's launcher icon or native display name. Release builds copy the branded source assets through the existing Fastlane asset pipeline.
 
-### I need the code for the v1 version
+## Upstream attribution
 
-You can still access it! We have moved the code from master to the [v1 branch](https://github.com/mattermost/mattermost-mobile/tree/v1). Be aware that we will not be providing any more v1 versions or updates in the public stores.
+This project is derived from [Mattermost Mobile](https://github.com/mattermost/mattermost-mobile). Mattermost is a trademark of Mattermost, Inc. Mattersync and Bytsolv are not affiliated with, sponsored by, or endorsed by Mattermost, Inc.
 
-# Troubleshooting
-
-### I keep getting a message "Cannot connect to the server. Please check your server URL and internet connection."
-
-This sometimes appears when there is an issue with the SSL certificate configuration. 
-
-To check that your SSL certificate is set up correctly, test the SSL certificate by visiting a site such as https://www.ssllabs.com/ssltest/index.html. If there’s an error about the missing chain or certificate path, there is likely an intermediate certificate missing that needs to be included.
-
-Please note that the apps cannot connect to servers with self-signed certificates, consider using [Let's Encrypt](https://docs.mattermost.com/install/config-ssl-http2-nginx.html) instead. 
-
-### I see a “Connecting…” bar that does not go away
-
-If your app is working properly, you should see a grey “Connecting…” bar that clears or says “Connected” after the app reconnects. 
-
-If you are seeing this message all the time, and your internet connection seems fine: 
-
-Ask your server administrator if the server uses NGINX or another webserver as a reverse proxy. If so, they should check that it is configured correctly for [supporting the websocket connection for APIv4 endpoints](https://docs.mattermost.com/install/install-ubuntu-1604.html#configuring-nginx-as-a-proxy-for-mattermost-server). 
+The original copyright, Apache 2.0 license, and dependency notices are retained in [LICENSE.txt](LICENSE.txt) and [NOTICE.txt](NOTICE.txt). Compatibility references and internal upstream module names remain where needed; they do not identify this app as an official upstream release.

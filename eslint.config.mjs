@@ -40,6 +40,13 @@ export default defineConfig([
   eslintMattermost,
   jestConfig,
   eslintReact,
+  // Original fork branding code belongs to Bytsolv. Keep upstream headers on all other files.
+  {
+    files: ["app/components/brand_icon/index.tsx", "app/i18n/branding.ts", "app/i18n/branding.test.ts"],
+    rules: {
+      "header/header": [2, "line", " Copyright (c) 2026-present Bytsolv Digital Transformations Private Limited.\n See LICENSE.txt for license information."]
+    }
+  },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {

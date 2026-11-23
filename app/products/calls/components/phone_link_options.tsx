@@ -15,7 +15,7 @@ import type {PhoneTarget} from '@calls/types/calls';
 const messages = defineMessages({
     callWithMattermost: {
         id: 'mobile.markdown.link.call_with_mattermost',
-        defaultMessage: 'Call with Mattermost',
+        defaultMessage: 'Call with Mattersync',
     },
     callWithPhone: {
         id: 'mobile.markdown.link.call_with_phone',

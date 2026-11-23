@@ -1,13 +1,17 @@
-Mattermost is workplace messaging from behind your firewall.
+Mattersync by Bytsolv is an independently maintained mobile client for Mattermost servers, with channels, direct messages, threads, file sharing, and voice messages.
 
-- Discuss topics in private groups, one-to-one or team-wide
-- Find what you're looking for with full text search, filters and #hashtags
-- Easily share images, video, audio and files 
-- Personalize your experience with custom colors, formatting and fonts
-- Connect in-house systems with webhooks and Slack-compatible integrations
+- Talk with your team in channels and direct messages
+- Follow conversations in threads
+- Record and attach AAC .m4a voice messages
+- Share files, images, and video
+- Connect to your existing team server
 
-To use this app, you need a "Server URL" from a Mattermost server. To host your own server go to https://about.mattermost.com/download
+A compatible Mattermost server and an account on that server are required. Your server administrator manages accounts, access, and server-side data retention.
 
-Find the Terms of Service for this app here: http://www.mattermost.com/terms/
+Mattersync is not affiliated with, sponsored by, or endorsed by Mattermost, Inc. Mattermost is a trademark of Mattermost, Inc.
 
-This is a reference implementation of an open source Mattermost app available at: https://github.com/mattermost/mattermost-mobile
+This app is a modified open-source client. Source code and upstream attribution:
+https://github.com/ejas-googerit/mattermost-mobile
+
+Publisher: Bytsolv Digital Transformations Private Limited
+Support and privacy contact: support@bytsolv.com

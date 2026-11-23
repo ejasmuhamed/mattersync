@@ -2,19 +2,19 @@
 // See LICENSE.txt for license information.
 
 import Clipboard from '@react-native-clipboard/clipboard';
-import {applicationId, nativeApplicationVersion, nativeBuildVersion} from 'expo-application';
+import {nativeApplicationVersion, nativeBuildVersion} from 'expo-application';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {useIntl} from 'react-intl';
 import {Text, View} from 'react-native';
 
 import {getLicenseLoadMetric} from '@actions/remote/license';
+import Brand from '@assets/branding/brand.json';
 import Config from '@assets/config.json';
+import BrandIcon from '@components/brand_icon';
 import Button from '@components/button';
-import CompassIcon from '@components/compass_icon';
 import FormattedText from '@components/formatted_text';
 import SettingContainer from '@components/settings/container';
 import {Screens} from '@constants';
-import AboutLinks from '@constants/about_links';
 import {SNACK_BAR_TYPE} from '@constants/snack_bar';
 import {useServerUrl} from '@context/server';
 import {useTheme} from '@context/theme';
@@ -32,8 +32,6 @@ import LearnMore from './learn_more';
 import Subtitle from './subtitle';
 import Title from './title';
 import TosPrivacyContainer from './tos_privacy';
-
-const MATTERMOST_BUNDLE_IDS = ['com.mattermost.rnbeta', 'com.mattermost.rn'];
 
 const TABLET_EXTRA_PADDING = 20;
 
@@ -98,6 +96,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme) => {
         },
         tosPrivacyContainer: {
             flexDirection: 'row',
+            flexWrap: 'wrap',
             marginBottom: 10,
         },
         group: {
@@ -155,6 +154,14 @@ const About = ({config, license}: AboutProps) => {
         return openURL(Config.WebsiteURL);
     }, [openURL]));
 
+    const handleAppSupport = usePreventDoubleTap(useCallback(() => {
+        return openURL(Config.SupportURL);
+    }, [openURL]));
+
+    const handleAppPrivacy = usePreventDoubleTap(useCallback(() => {
+        return openURL(Config.AppPrivacyPolicyURL);
+    }, [openURL]));
+
     const handlePlatformNotice = usePreventDoubleTap(useCallback(() => {
         return openURL(Config.ServerNoticeURL);
     }, [openURL]));
@@ -164,12 +171,12 @@ const About = ({config, license}: AboutProps) => {
     }, [openURL]));
 
     const handleTermsOfService = usePreventDoubleTap(useCallback(() => {
-        return openURL(AboutLinks.TERMS_OF_SERVICE);
-    }, [openURL]));
+        return openURL(config.TermsOfServiceLink);
+    }, [config.TermsOfServiceLink, openURL]));
 
     const handlePrivacyPolicy = usePreventDoubleTap(useCallback(() => {
-        return openURL(AboutLinks.PRIVACY_POLICY);
-    }, [openURL]));
+        return openURL(config.PrivacyPolicyLink);
+    }, [config.PrivacyPolicyLink, openURL]));
 
     const serverVersion = useMemo(() => {
         const buildNumber = config.BuildNumber;
@@ -209,9 +216,7 @@ const About = ({config, license}: AboutProps) => {
         <SettingContainer testID='about'>
             <View style={isTablet ? styles.tabletContentWrapper : undefined}>
                 <View style={styles.logoContainer}>
-                    <CompassIcon
-                        color={theme.centerChannelColor}
-                        name='mattermost'
+                    <BrandIcon
                         size={80}
                         testID='about.logo'
                     />
@@ -322,19 +327,37 @@ const About = ({config, license}: AboutProps) => {
                         </View>
                     )}
                     <LearnMore
-                        config={config}
-                        license={license}
                         onPress={handleAboutTeam}
                     />
-                    {!MATTERMOST_BUNDLE_IDS.includes(applicationId || '') &&
                     <FormattedText
-                        defaultMessage='{site} is powered by Mattermost'
-                        id={'settings.about.powered_by'}
+                        id='mattersync.about.publisher'
+                        defaultMessage='Published by {publisher}'
+                        values={{publisher: Brand.publisher.legalName}}
+                        style={styles.footerText}
+                    />
+                    <FormattedText
+                        id='mattersync.about.support'
+                        defaultMessage='Support and privacy contact: {email}'
+                        values={{email: Brand.publisher.supportEmail}}
+                        onPress={handleAppSupport}
+                        accessibilityRole='link'
+                        style={styles.noticeLink}
+                    />
+                    {Boolean(Config.AppPrivacyPolicyURL) && (
+                        <FormattedText
+                            id='mattersync.about.privacy'
+                            defaultMessage='App Privacy Notice'
+                            onPress={handleAppPrivacy}
+                            accessibilityRole='link'
+                            style={styles.noticeLink}
+                        />
+                    )}
+                    <FormattedText
+                        defaultMessage='Mattersync is an independent client for Mattermost. It is not affiliated with or endorsed by Mattermost, Inc. Mattermost is a trademark of Mattermost, Inc.'
+                        id='mattersync.about.independent'
                         style={styles.footerText}
                         testID='about.powered_by'
-                        values={{site: config.SiteName}}
                     />
-                    }
                     <View
                         style={styles.thinLine}
                     />
@@ -354,8 +377,8 @@ const About = ({config, license}: AboutProps) => {
                     </View>
                     <View style={styles.noticeContainer}>
                         <FormattedText
-                            id={'settings.notice_text'}
-                            defaultMessage='Mattermost is made possible by the open source software used in our {platform} and {mobile}.'
+                            id='mattersync.notice_text'
+                            defaultMessage='Mattersync is built on open source software used in the {platform} and {mobile}.'
                             style={styles.footerText}
                             values={{
                                 platform: (

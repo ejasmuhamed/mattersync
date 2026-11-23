@@ -3586,3 +3586,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+
+
+--------
+
+Mattersync fork modifications
+
+Mattersync is an independent, modified client published by Bytsolv Digital Transformations Private Limited. The fork adds voice-message recording and independent app branding. Original upstream copyright, license, and dependency notices above remain applicable.
+
+Mattermost is a trademark of Mattermost, Inc. Mattersync is not affiliated with or endorsed by Mattermost, Inc.

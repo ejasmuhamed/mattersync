@@ -298,7 +298,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ios-build-simulator-${{ github.run_id }}
-          path: Mattermost-simulator-*.app.zip
+          path: Mattersync-simulator-*.app.zip
 
   build-android-apk:
     runs-on: ubuntu-latest-8-cores

@@ -114,7 +114,7 @@ after placing the `.app` under `mobile-artifacts/`:
 echo "RUNNING_E2E=true" > .env
 # Build release sim .app (same as CI build-ios-simulator job):
 cd fastlane && bundle exec fastlane ios simulator --env ios.simulator && cd ..
-unzip -o Mattermost-simulator-*.app.zip -d mobile-artifacts/
+unzip -o Mattersync-simulator-*.app.zip -d mobile-artifacts/
 
 DEVICE_NAME="iPhone 17 Pro" DEVICE_OS_VERSION="iOS 26.2" \
   bash detox/scripts/preboot_ios_simulator.sh
@@ -192,7 +192,7 @@ source detox/maestro/.maestro-test-env.sh
 # 2. Build + boot simulator (CI-parity)
 echo "RUNNING_E2E=true" > .env
 cd fastlane && bundle exec fastlane ios simulator --env ios.simulator && cd ..
-unzip -o Mattermost-simulator-*.app.zip -d mobile-artifacts/
+unzip -o Mattersync-simulator-*.app.zip -d mobile-artifacts/
 DEVICE_NAME="iPhone 17 Pro" DEVICE_OS_VERSION="iOS 26.2" \
   bash detox/scripts/preboot_ios_simulator.sh
 
@@ -257,8 +257,8 @@ parallel release build (see `.github/actions/build-android-maestro-apk`).
 ```bash
 echo "RUNNING_E2E=true" > .env
 cd fastlane && bundle exec fastlane ios simulator --env ios.simulator
-# Produces Mattermost-simulator-*.app.zip in repo root; unzip to mobile-artifacts/
-unzip -o Mattermost-simulator-*.app.zip -d mobile-artifacts/
+# Produces Mattersync-simulator-*.app.zip in repo root; unzip to mobile-artifacts/
+unzip -o Mattersync-simulator-*.app.zip -d mobile-artifacts/
 DEVICE_NAME="iPhone 17 Pro" DEVICE_OS_VERSION="iOS 26.2" \
   bash detox/scripts/preboot_ios_simulator.sh
 ```

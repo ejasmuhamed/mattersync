@@ -5,6 +5,7 @@ import React from 'react';
 import {defineMessages, useIntl} from 'react-intl';
 import {Text} from 'react-native';
 
+import FormattedText from '@components/formatted_text';
 import {useTheme} from '@context/theme';
 import {getSkuDisplayName} from '@utils/subscription';
 import {makeStyleSheetFromTheme} from '@utils/theme';
@@ -19,13 +20,19 @@ const getStyleSheet = makeStyleSheetFromTheme((theme) => {
             marginTop: 8,
             marginBottom: 8,
         },
+        serverEdition: {
+            ...typography('Body', 100, 'Regular'),
+            color: theme.centerChannelColor,
+            textAlign: 'center',
+            marginBottom: 8,
+        },
     };
 });
 
 const messages = defineMessages({
     mattermost: {
         id: 'about.mattermost',
-        defaultMessage: 'Mattermost',
+        defaultMessage: 'Mattersync',
     },
     teamEditiont0: {
         id: 'about.teamEditiont0',
@@ -64,14 +71,20 @@ const Title = ({config, license}: TitleProps) => {
     const product = intl.formatMessage(messages.mattermost);
 
     return (
-        <Text
-            style={style.title}
-            testID='about.title'
-        >
-            {product}
-            {' '}
-            {edition}
-        </Text>
+        <>
+            <Text
+                style={style.title}
+                testID='about.title'
+            >
+                {product}
+            </Text>
+            <FormattedText
+                id='mattersync.about.server_edition'
+                defaultMessage='Server edition: {edition}'
+                values={{edition}}
+                style={style.serverEdition}
+            />
+        </>
     );
 };
 

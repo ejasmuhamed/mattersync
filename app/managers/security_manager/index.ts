@@ -10,6 +10,7 @@ import {AppState, DeviceEventEmitter, type AppStateStatus, type EventSubscriptio
 import {terminateSession} from '@actions/local/session';
 import {getCurrentUserLocale} from '@actions/local/user';
 import {logout} from '@actions/remote/session';
+import Brand from '@assets/branding/brand.json';
 import {Events} from '@constants';
 import DatabaseManager from '@database/manager';
 import {DEFAULT_LOCALE, getTranslations} from '@i18n';
@@ -777,7 +778,7 @@ class SecurityManagerSingleton {
 
         try {
             await Emm.authenticate({
-                reason: translations[messages.securedBy.id].replace('{vendor}', siteName || config?.siteName || 'Mattermost'),
+                reason: translations[messages.securedBy.id].replace('{vendor}', siteName || config?.siteName || Brand.name),
                 fallback: true,
                 supressEnterPassword: false,
                 blurOnAuthenticate: this.shouldBlurOnAuthenticate(server),

@@ -387,6 +387,7 @@ PODS:
     - fmt
     - glog
     - hermes-engine
+    - RaTeXRuntime
     - RCT-Folly
     - RCT-Folly/Fabric
     - RCTRequired
@@ -408,6 +409,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RaTeXRuntime (0.1.4)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -4045,6 +4047,7 @@ DEPENDENCIES:
   - NitroModules (from `../node_modules/react-native-nitro-modules`)
   - OpenGraph (= 1.4.1)
   - ratex-react-native (from `../node_modules/ratex-react-native`)
+  - RaTeXRuntime (from `./RaTeXRuntime`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
   - RCTRequired (from `../node_modules/react-native/Libraries/Required`)
@@ -4256,6 +4259,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-nitro-modules"
   ratex-react-native:
     :path: "../node_modules/ratex-react-native"
+  RaTeXRuntime:
+    :path: "./RaTeXRuntime"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -4476,7 +4481,7 @@ SPEC CHECKSUMS:
   CookieManager: bcf2b410368cc3d392279e7d67dfff0295755162
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EXApplication: ab5a9ca485adce8be81309a5172d1565e9d7467f
-  EXConstants: dadbeba983acc30f855a919658a2b34fbd86615d
+  EXConstants: c626a586e7ebc42efd4f1817a98cc888e426d277
   Expo: 564250e74ccdb0eb68bc3a073caa3721af924038
   ExpoAsset: 7721c5c4ae2a7c3c8147a046727ac6c020b05648
   ExpoAudio: 507b44eb640d1e0e49d55f38d0b153d3b1fd0f2b
@@ -4502,7 +4507,7 @@ SPEC CHECKSUMS:
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
   Gekidou: 9ac6db6670ad1377704998069c8a2f9e1a0ee2b4
   glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
-  hermes-engine: b535fca2fe101b43d48d398d642f9d1c41a6c64b
+  hermes-engine: a9114647ddabad904bcee48398302d54a7481dd7
   KituraContracts: e845e60dc8627ad0a76fa55ef20a45451d8f830b
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   livekit-react-native: fdecaea86ea91c7943c56ada4ab4bf9f22ee6ff3
@@ -4516,7 +4521,8 @@ SPEC CHECKSUMS:
   NitroBackgroundTimer: ca9c6ce4aace694da8dc082dbe202e14ae8b311c
   NitroModules: d2038959f7d0a9bf7b6f87e9a7c18da8b13311ff
   OpenGraph: 596722bb7f112d2dabcdb284cb817f01341a7540
-  ratex-react-native: 11d24a2012f15ab1ec536dd3e04064c21ee4f9a4
+  ratex-react-native: 2c61ed21ad4e5cb5863a179d984ac6884a390ebe
+  RaTeXRuntime: f2a5cc1bd37c6d2159351eee6b3e195069bd8888
   RCT-Folly: b29feb752b08042c62badaef7d453f3bb5e6ae23
   RCTDeprecation: c7d33f6bc08dbb8be7dfa70d219bfb034480a406
   RCTRequired: 42b13c9504609bae9a9f65673a6b4fcbd8d07bd1
@@ -4630,6 +4636,6 @@ SPEC CHECKSUMS:
   WebRTC-SDK: 1d7fc2ae91da6edd63e25f3882ff24f86a8d9d8b
   Yoga: e9fea23bf9b2766818ce9a8df72f584bf5ad36cd
 
-PODFILE CHECKSUM: 63587a12789a0ab2844982736e80daacdb317d76
+PODFILE CHECKSUM: 5c186fe18a7dcac1ad434781b9156b107c14e02e
 
-COCOAPODS: 1.16.1
+COCOAPODS: 1.17.0

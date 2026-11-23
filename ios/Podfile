@@ -82,6 +82,7 @@ target 'Mattermost' do
 
   pod 'simdjson', path: '../node_modules/@nozbe/simdjson', :modular_headers => true
   pod 'Gekidou', :path => './Gekidou'
+  pod 'RaTeXRuntime', :path => './RaTeXRuntime'
   pod 'CocoaLumberjack', :modular_headers => true
   pod 'TurboLogIOSNative', :git => 'https://github.com/larkox/react-native-turbo-log-ios-native.git', :modular_headers => true
 
@@ -107,6 +108,17 @@ target 'MattermostShare' do
   pod 'react-native-network-client-session-attributes', :path => '../node_modules/@mattermost/react-native-network-client'
 end
 
+# Keep Rust's exception personality in its own image. The app can then retain
+# compact unwind data for Swift, Objective-C and C++ exception handlers.
+pre_install do |installer|
+  installer.pod_targets.each do |target|
+    next unless target.name == 'RaTeXRuntime'
+    def target.build_type
+      Pod::BuildType.dynamic_framework
+    end
+  end
+end
+
 post_install do |installer|
   react_native_post_install(
     installer,
@@ -121,6 +133,10 @@ post_install do |installer|
       bc.build_settings['OTHER_LDFLAGS']        = ['$(inherited)', '-ObjC']
       bc.build_settings['STRIP_SWIFT_SYMBOLS']  = 'NO'
       bc.build_settings['ENABLE_BITCODE']       = 'NO'
+      deployment_target = bc.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+      if deployment_target.nil? || Gem::Version.new(deployment_target) < Gem::Version.new(app_deployment_target)
+        bc.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = app_deployment_target
+      end
     end
 
   end
@@ -132,7 +148,10 @@ post_install do |installer|
       target.build_configurations.each do |c|
         c.build_settings['APPLICATION_EXTENSION_API_ONLY'] = 'YES'
         c.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'YES'
+        # Sentry's static framework contains C++ objects used by both extensions.
+        c.build_settings['OTHER_LDFLAGS'] = Array(c.build_settings['OTHER_LDFLAGS'] || '$(inherited)') | ['-lc++']
       end
+      target.project.save
     end
 
     # make sure the main app is NOT extension-only
@@ -140,6 +159,9 @@ post_install do |installer|
     if app_target
       app_target.build_configurations.each do |c|
         c.build_settings.delete('APPLICATION_EXTENSION_API_ONLY')
+        # Disabling compact unwind prevents native C++ exceptions from being caught.
+        c.build_settings['OTHER_LDFLAGS'] = Array(c.build_settings['OTHER_LDFLAGS'] || '$(inherited)').reject { |flag| flag == '-Wl,-no_compact_unwind' }
       end
+      app_target.project.save
     end
 end

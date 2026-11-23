@@ -1,8 +1,21 @@
+diff --git a/node_modules/ratex-react-native/ios/RaTeXEngine.swift b/node_modules/ratex-react-native/ios/RaTeXEngine.swift
+index 8ae1091..24ca477 100644
+--- a/node_modules/ratex-react-native/ios/RaTeXEngine.swift
++++ b/node_modules/ratex-react-native/ios/RaTeXEngine.swift
+@@ -1,7 +1,7 @@
+ // RaTeXEngine.swift — Swift wrapper around the ratex_parse_and_layout C ABI.
+ 
+ import Foundation
+-import RaTeXFFI
++import RaTeXRuntime
+ import UIKit
+ 
+ private func ffiColor(from color: UIColor, traitCollection: UITraitCollection? = nil) -> RatexColor {
 diff --git a/node_modules/ratex-react-native/ios/RaTeXViewManager.mm b/node_modules/ratex-react-native/ios/RaTeXViewManager.mm
-index 10323ea..99d35a5 100644
+index 00fbe5c..d22a4cc 100644
 --- a/node_modules/ratex-react-native/ios/RaTeXViewManager.mm
 +++ b/node_modules/ratex-react-native/ios/RaTeXViewManager.mm
-@@ -14,7 +14,11 @@
+@@ -17,7 +17,11 @@
  #endif
  
  // Swift-generated header (module name derived from podspec/target name)
@@ -16,10 +29,10 @@ index 10323ea..99d35a5 100644
  // ---------------------------------------------------------------------------
  // MARK: - New Architecture (Fabric)
 diff --git a/node_modules/ratex-react-native/ratex-react-native.podspec b/node_modules/ratex-react-native/ratex-react-native.podspec
-index 09ce3d9..7e4bc0c 100644
+index 09ce3d9..cac1dca 100644
 --- a/node_modules/ratex-react-native/ratex-react-native.podspec
 +++ b/node_modules/ratex-react-native/ratex-react-native.podspec
-@@ -13,8 +13,23 @@ Pod::Spec.new do |s|
+@@ -13,11 +13,26 @@ Pod::Spec.new do |s|
    s.source         = { :git => "https://github.com/erweixin/RaTeX.git", :tag => s.version.to_s }
  
    # Swift source files + ObjC++ bridge
@@ -27,7 +40,9 @@ index 09ce3d9..7e4bc0c 100644
 +  s.source_files   = "ios/*.{h,m,mm,swift}"
    s.swift_version  = "5.9"
 +  s.module_name    = "ratex_react_native"
-+
+ 
+-  # Prebuilt static library (libratex_ffi.a) packaged as XCFramework
+-  s.vendored_frameworks = "ios/RaTeX.xcframework"
 +  s.pod_target_xcconfig = {
 +    "USE_HEADERMAP" => "YES",
 +    "DEFINES_MODULE" => "YES",
@@ -41,6 +56,9 @@ index 09ce3d9..7e4bc0c 100644
 +  s.user_target_xcconfig = {
 +    "HEADER_SEARCH_PATHS" => '"${PODS_CONFIGURATION_BUILD_DIR}/ratex-react-native/Swift Compatibility Header"',
 +  }
++
++  # Isolate Rust's exception personality from the React Native application image.
++  s.dependency "RaTeXRuntime"
  
-   # Prebuilt static library (libratex_ffi.a) packaged as XCFramework
-   s.vendored_frameworks = "ios/RaTeX.xcframework"
+   # KaTeX fonts — loaded at runtime from this bundle
+   s.resource_bundles = {

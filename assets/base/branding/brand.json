@@ -1,0 +1,27 @@
+{
+  "name": "Mattersync",
+  "background": "#123B38",
+  "foreground": "#FFFFFF",
+  "accent": "#52E0C5",
+  "lightBackground": "#F5FAF8",
+  "darkBackground": "#0C2523",
+  "messageIds": [
+    "about.mattermost",
+    "invite_people_to_team.message",
+    "mobile.calls_mic_error",
+    "mobile.calls.foreground_service.channel_name",
+    "mobile.calls.foreground_service.title",
+    "mobile.managed.not_secured.android",
+    "mobile.managed.not_secured.ios",
+    "mobile.markdown.link.call_with_mattermost",
+    "mobile.server_upgrade.description",
+    "rate.title",
+    "share_extension.channel_error"
+  ],
+  "publisher": {
+    "name": "Bytsolv",
+    "legalName": "Bytsolv Digital Transformations Private Limited",
+    "supportEmail": "support@bytsolv.com",
+    "website": "https://bytsolv.com"
+  }
+}
