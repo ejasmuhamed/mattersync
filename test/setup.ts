@@ -64,6 +64,7 @@ jest.mock('expo-audio', () => {
     return {
         AudioModule: {AudioRecorder: jest.fn(() => recorder)},
         RecordingPresets: jest.requireActual('expo-audio/build/RecordingConstants').RecordingPresets,
+        getRecordingPermissionsAsync: jest.fn().mockResolvedValue({granted: true}),
         requestRecordingPermissionsAsync: jest.fn().mockResolvedValue({granted: true}),
         setAudioModeAsync: jest.fn().mockResolvedValue(undefined),
         useAudioRecorderState: jest.fn(() => ({isRecording: false, durationMillis: 0})),

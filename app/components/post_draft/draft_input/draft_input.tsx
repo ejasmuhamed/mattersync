@@ -15,6 +15,7 @@ import {useServerUrl} from '@context/server';
 import {useTheme} from '@context/theme';
 import {useIsTablet} from '@hooks/device';
 import {usePersistentNotificationProps} from '@hooks/persistent_notification_props';
+import {useSendVoiceMessage} from '@hooks/send_voice_message';
 import {navigateToScreen} from '@screens/navigation';
 import CallbackStore from '@store/callback_store';
 import {useCurrentScreen} from '@store/navigation_store';
@@ -212,6 +213,15 @@ function DraftInput({
     }, [blurAndDismissKeyboard, files.length, handleSendMessage, scheduledPostsEnabled]);
 
     const sendActionDisabled = !canSend || noMentionsError;
+
+    const {sendVoiceMessage} = useSendVoiceMessage({
+        channelId,
+        rootId,
+        files,
+        canSend: !sendActionDisabled,
+        addFiles,
+        send: handleSendMessage,
+    });
     useAnimatedReaction(
         () => stateContext.postInputTranslateY.value,
         (translateY) => {
@@ -278,6 +288,7 @@ function DraftInput({
                             channelId={channelId}
                             fileCount={files.length}
                             addFiles={addFiles}
+                            sendVoiceMessage={sendVoiceMessage}
                             updateValue={updateValue}
                             value={value}
                             postPriority={postPriority}

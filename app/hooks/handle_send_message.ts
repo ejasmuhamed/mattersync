@@ -277,6 +277,15 @@ export const useHandleSendMessage = ({
         }
 
         const hasFailedAttachments = files.some((f) => f.failed);
+
+        // Failed files are dropped when sending, so with no text this would post an empty message
+        // and lose track of attachments such as a voice message.
+        if (hasFailedAttachments && !value.trim() && files.every((f) => f.failed)) {
+            setSendingMessage(false);
+            DraftUtils.alertNothingToSend(intl);
+            return Promise.resolve();
+        }
+
         if (hasFailedAttachments) {
             const cancel = () => {
                 setSendingMessage(false);

@@ -34,6 +34,7 @@ type Props = {
     value: string;
     updateValue: (value: string) => void;
     addFiles: (file: FileInfo[]) => void;
+    sendVoiceMessage?: (files: FileInfo[]) => void;
     postPriority: PostPriority;
     updatePostPriority: (postPriority: PostPriority) => void;
     postBoRConfig?: PostBoRConfig;
@@ -71,6 +72,7 @@ export default function QuickActions({
     showAttachLogs,
     updateValue,
     addFiles,
+    sendVoiceMessage,
     postPriority,
     updatePostPriority,
     focus,
@@ -116,6 +118,7 @@ export default function QuickActions({
                 testID={`${testID}.voice_message_action`}
                 disabled={!canUploadFiles || fileCount >= maxFileCount}
                 onUploadFiles={addFiles}
+                onSendFiles={sendVoiceMessage}
             />
             <InputAction
                 testID={atInputActionTestID}

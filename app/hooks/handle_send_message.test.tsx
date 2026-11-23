@@ -204,6 +204,27 @@ describe('useHandleSendMessage', () => {
         );
     });
 
+    it('should not post an empty message when every attachment failed and there is no text', async () => {
+        jest.spyOn(DraftUtils, 'alertNothingToSend').mockImplementation(jest.fn());
+
+        const props = {
+            ...defaultProps,
+            files: [{clientId: 'voice', failed: true}],
+            value: '  ',
+        };
+
+        const {result} = renderHook(() => useHandleSendMessage(props), {wrapper});
+
+        await act(async () => {
+            result.current.handleSendMessage();
+        });
+
+        expect(DraftUtils.alertNothingToSend).toHaveBeenCalledTimes(1);
+        expect(createPost).not.toHaveBeenCalled();
+        expect(props.clearDraft).not.toHaveBeenCalled();
+        expect(result.current.canSend).toBe(true);
+    });
+
     it('should handle reaction messages', async () => {
         const props = {
             ...defaultProps,

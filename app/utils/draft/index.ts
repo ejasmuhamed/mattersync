@@ -66,6 +66,22 @@ export function alertAttachmentFail(intl: IntlShape, accept: AlertCallback, canc
     );
 }
 
+/**
+ * Shown when every attachment failed and there is no text, so sending would only post an empty message.
+ */
+export function alertNothingToSend(intl: IntlShape) {
+    Alert.alert(
+        intl.formatMessage({
+            id: 'mobile.post_textbox.uploadFailedTitle',
+            defaultMessage: 'Attachment failure',
+        }),
+        intl.formatMessage({
+            id: 'mobile.post_textbox.uploadFailedNothingToSend',
+            defaultMessage: "Your attachments didn't upload, so there's nothing to send yet. Tap retry on each attachment, then send again.",
+        }),
+    );
+}
+
 export const textContainsAtAllAtChannel = (text: string) => {
     const textWithoutCode = text.replace(CODE_REGEX, '');
     return (/(?:\B|\b_+)@(channel|all)(?!(\.|-|_)*[^\W_])/i).test(textWithoutCode);
