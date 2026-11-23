@@ -2,9 +2,10 @@
 // See LICENSE.txt for license information.
 
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useIntl} from 'react-intl';
+import {defineMessages, useIntl} from 'react-intl';
 import {
     View,
+    Pressable,
     TouchableOpacity,
     Text,
     TouchableWithoutFeedback,
@@ -12,10 +13,20 @@ import {
 } from 'react-native';
 import Video, {type OnLoadData, type OnProgressData, type OnVideoErrorData, type VideoRef} from 'react-native-video';
 
+import {storePreferredAudioPlaybackRate} from '@actions/app/global';
+import {ITEM_HEIGHT} from '@components/slide_up_panel_item';
 import {useTheme} from '@context/theme';
 import {useDownloadFileAndPreview} from '@hooks/files';
+import useInitialValue from '@hooks/initial_value';
 import useThrottled from '@hooks/throttled';
+import {getPreferredAudioPlaybackRate} from '@queries/app/global';
+import {bottomSheet} from '@screens/navigation';
+import AudioPlaybackStore from '@store/audio_playback_store';
+import VoiceRecordingStore from '@store/voice_recording_store';
+import {getToggledPlaybackRate, NORMAL_PLAYBACK_RATE, type PlaybackRate} from '@utils/audio_playback';
 import {alertDownloadDocumentDisabled, alertOnlyPDFSupported} from '@utils/document';
+import {generateId} from '@utils/general';
+import {bottomSheetSnapPoint} from '@utils/helpers';
 import {logDebug} from '@utils/log';
 import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
@@ -23,6 +34,18 @@ import {typography} from '@utils/typography';
 import CompassIcon from '../compass_icon';
 import FormattedText from '../formatted_text';
 import ProgressBar from '../progress_bar';
+
+import PlaybackSpeedSheet from './playback_speed_sheet';
+
+const messages = defineMessages({
+    speed: {id: 'audio.playback_speed', defaultMessage: 'Playback speed'},
+    speedHint: {id: 'audio.playback_speed_hint', defaultMessage: 'Tap to switch speed. Long press to choose a speed.'},
+});
+
+const SPEED_HIT_SLOP = {top: 8, bottom: 8, left: 4, right: 4};
+
+// The speed sheet holds a header, the slider and the speed labels: about three option rows tall.
+const SPEED_SHEET_ROWS = 3;
 
 type Props = {
     file: FileInfo;
@@ -41,6 +64,21 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => ({
         flexDirection: 'row',
         gap: 12,
         alignItems: 'center',
+    },
+    speedButton: {
+        alignItems: 'center',
+        backgroundColor: changeOpacity(theme.buttonBg, 0.08),
+        borderRadius: 12,
+        minWidth: 48,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+    },
+    speedButtonPressed: {
+        opacity: 0.72,
+    },
+    speedText: {
+        color: theme.buttonBg,
+        ...typography('Body', 75, 'SemiBold'),
     },
     playButton: {
         flexDirection: 'column',
@@ -77,6 +115,29 @@ const AudioFile = ({file, canDownloadFiles, enableSecureFilePreview}: Props) => 
     const [timeInMinutes, setTimeInMinutes] = useState<string>('0:00');
     const [duration, setDuration] = useState<number>(0);
     const videoRef = useRef<VideoRef>(null);
+    const [playbackRate, setPlaybackRate] = useState<PlaybackRate>(1);
+    const speedText = `${playbackRate}×`;
+
+    // While a voice message records, react-native-video must not reset the iOS audio session to playback-only, or the microphone records silence.
+    const [isRecordingVoiceMessage, setIsRecordingVoiceMessage] = useState(VoiceRecordingStore.isRecording());
+    useEffect(() => {
+        const subscription = VoiceRecordingStore.observe().subscribe(setIsRecordingVoiceMessage);
+        return () => subscription.unsubscribe();
+    }, []);
+
+    // Only one audio message plays at a time: pause this player when another one starts.
+    const playerId = useInitialValue(generateId);
+    useEffect(() => {
+        const subscription = AudioPlaybackStore.observe().subscribe((playingId) => {
+            if (playingId !== playerId) {
+                setHasPaused(true);
+            }
+        });
+        return () => {
+            subscription.unsubscribe();
+            AudioPlaybackStore.stop(playerId);
+        };
+    }, [playerId]);
 
     useEffect(() => {
         if (hasEnded) {
@@ -84,19 +145,26 @@ const AudioFile = ({file, canDownloadFiles, enableSecureFilePreview}: Props) => 
                 setHasPaused(true);
                 setProgress(0);
                 setHasEnded(false);
+                AudioPlaybackStore.stop(playerId);
             }, 100);
 
             return () => clearTimeout(timer);
         }
 
         return () => null;
-    }, [hasEnded]);
+    }, [hasEnded, playerId]);
 
     const source = useMemo(() => ({uri: file.uri}), [file.uri]);
 
     const {toggleDownloadAndPreview} = useDownloadFileAndPreview(enableSecureFilePreview);
 
     const onPlayPress = () => {
+        if (hasPaused) {
+            // Claim playback first so the store pauses every other player, not this one.
+            AudioPlaybackStore.play(playerId);
+        } else {
+            AudioPlaybackStore.stop(playerId);
+        }
         setHasPaused(!hasPaused);
     };
 
@@ -158,6 +226,32 @@ const AudioFile = ({file, canDownloadFiles, enableSecureFilePreview}: Props) => 
         }
     }, [duration, throttledLoadTime100Milliseconds]);
 
+    const onSpeedPress = useCallback(async () => {
+        const preferred = await getPreferredAudioPlaybackRate();
+        setPlaybackRate((current) => getToggledPlaybackRate(current, preferred));
+    }, []);
+
+    const onSpeedLongPress = useCallback(() => {
+        // Applies live while the sheet stays open, so the change can be heard while dragging.
+        const onChangeRate = (rate: PlaybackRate) => {
+            setPlaybackRate(rate);
+
+            // A faster speed also becomes what a tap switches to; normal speed is never a tap target.
+            if (rate !== NORMAL_PLAYBACK_RATE) {
+                storePreferredAudioPlaybackRate(rate);
+            }
+        };
+
+        const renderContent = () => (
+            <PlaybackSpeedSheet
+                initialRate={playbackRate}
+                onChange={onChangeRate}
+            />
+        );
+
+        bottomSheet(renderContent, [1, bottomSheetSnapPoint(SPEED_SHEET_ROWS, ITEM_HEIGHT)]);
+    }, [playbackRate]);
+
     const onAudioFocusChanged = useCallback(({hasAudioFocus}: {hasAudioFocus: boolean}) => {
         if (!hasAudioFocus) {
             setHasPaused(true);
@@ -202,6 +296,8 @@ const AudioFile = ({file, canDownloadFiles, enableSecureFilePreview}: Props) => 
                     onError={onError}
                     onEnd={onEnd}
                     onAudioFocusChanged={onAudioFocusChanged}
+                    disableAudioSessionManagement={isRecordingVoiceMessage}
+                    rate={playbackRate}
                 />
 
                 <View style={style.progressBar}>
@@ -214,6 +310,20 @@ const AudioFile = ({file, canDownloadFiles, enableSecureFilePreview}: Props) => 
                 </View>
 
                 <Text style={style.timerText}>{timeInMinutes}</Text>
+
+                <Pressable
+                    testID='audio_file.speed'
+                    accessibilityRole='button'
+                    accessibilityLabel={intl.formatMessage(messages.speed)}
+                    accessibilityValue={{text: speedText}}
+                    accessibilityHint={intl.formatMessage(messages.speedHint)}
+                    onPress={onSpeedPress}
+                    onLongPress={onSpeedLongPress}
+                    hitSlop={SPEED_HIT_SLOP}
+                    style={({pressed}) => [style.speedButton, pressed && style.speedButtonPressed]}
+                >
+                    <Text style={style.speedText}>{speedText}</Text>
+                </Pressable>
 
                 {!enableSecureFilePreview &&
                 <TouchableOpacity

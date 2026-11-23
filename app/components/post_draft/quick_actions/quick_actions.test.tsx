@@ -180,6 +180,28 @@ describe('Quick Actions', () => {
         });
     });
 
+    describe('voice messages', () => {
+        it('should allow recording when another attachment can be uploaded', () => {
+            const {getByTestId} = renderWithIntlAndTheme(<QuickActions {...baseProps}/>);
+
+            expect(getByTestId('test-quick-actions.voice_message_action')).not.toBeDisabled();
+        });
+
+        it.each([
+            {canUploadFiles: false, fileCount: 0},
+            {canUploadFiles: true, fileCount: baseProps.maxFileCount},
+        ])('should disable recording when uploads are unavailable: %o', (uploadState) => {
+            const {getByTestId} = renderWithIntlAndTheme(
+                <QuickActions
+                    {...baseProps}
+                    {...uploadState}
+                />,
+            );
+
+            expect(getByTestId('test-quick-actions.voice_message_action.disabled')).toBeDisabled();
+        });
+    });
+
     describe('BoR quick action', () => {
         it('should render BoR action when isBoREnabled is true', () => {
             const props = {

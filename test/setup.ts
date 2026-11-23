@@ -50,6 +50,26 @@ jest.mock('expo-device', () => {
     };
 });
 
+jest.mock('expo-audio', () => {
+    const recorder = {
+        uri: null,
+        isRecording: false,
+        prepareToRecordAsync: jest.fn().mockResolvedValue(undefined),
+        record: jest.fn(),
+        stop: jest.fn().mockResolvedValue(undefined),
+        getStatus: jest.fn(() => ({durationMillis: 0})),
+        addListener: jest.fn(() => ({remove: jest.fn()})),
+        release: jest.fn(),
+    };
+    return {
+        AudioModule: {AudioRecorder: jest.fn(() => recorder)},
+        RecordingPresets: jest.requireActual('expo-audio/build/RecordingConstants').RecordingPresets,
+        requestRecordingPermissionsAsync: jest.fn().mockResolvedValue({granted: true}),
+        setAudioModeAsync: jest.fn().mockResolvedValue(undefined),
+        useAudioRecorderState: jest.fn(() => ({isRecording: false, durationMillis: 0})),
+    };
+});
+
 jest.mock('expo-file-system', () => {
     const mockInfo = {exists: true, uri: 'file:///mock', size: 0, modificationTime: 0};
 

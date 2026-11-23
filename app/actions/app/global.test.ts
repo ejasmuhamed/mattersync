@@ -2,6 +2,7 @@
 // See LICENSE.txt for license information.
 
 import {Tutorial} from '@constants';
+import {GLOBAL_IDENTIFIERS} from '@constants/database';
 import DatabaseManager from '@database/manager';
 import {
     getDeviceToken,
@@ -12,6 +13,7 @@ import {
     getLastViewedChannelIdAndServer,
     getLastViewedThreadIdAndServer,
     getPushDisabledInServerAcknowledged,
+    getPreferredAudioPlaybackRate,
     queryGlobalValue,
 } from '@queries/app/global';
 
@@ -35,6 +37,7 @@ import {
     removePushSigningKey,
     storeScheduledPostTutorial,
     storeScheduledPostsListTutorial,
+    storePreferredAudioPlaybackRate,
 } from './global';
 
 const serverUrl = 'server.test.com';
@@ -209,6 +212,17 @@ describe('/app/actions/app/global', () => {
         await storeScheduledPostTutorial();
         records = await queryGlobalValue(Tutorial.SCHEDULED_POST)?.fetch();
         expect(records?.[0]?.value).toBe(true);
+    });
+
+    test('storePreferredAudioPlaybackRate', async () => {
+        expect(await getPreferredAudioPlaybackRate()).toBe(2);
+
+        await storePreferredAudioPlaybackRate(1.5);
+        expect(await getPreferredAudioPlaybackRate()).toBe(1.5);
+
+        // An unsupported stored value falls back to the default instead of reaching the player.
+        await storeGlobal(GLOBAL_IDENTIFIERS.AUDIO_PLAYBACK_RATE, 3);
+        expect(await getPreferredAudioPlaybackRate()).toBe(2);
     });
 
     test('storeScheduledPostsListTutorial', async () => {

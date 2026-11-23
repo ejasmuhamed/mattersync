@@ -2,7 +2,7 @@
 // See LICENSE.txt for license information.
 
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet} from 'react-native';
 
 import AIRewriteAction from '@agents/components/ai_rewrite_action';
 import BoRQuickAction from '@components/post_draft/quick_actions/bor_quick_action';
@@ -12,6 +12,7 @@ import AttachmentAction from './attachment_quick_action';
 import EmojiAction from './emoji_quick_action';
 import InputAction from './input_quick_action';
 import PostPriorityAction from './post_priority_action';
+import VoiceMessageAction from './voice_message_action';
 
 import type {AvailableScreens} from '@typings/screens/navigation';
 
@@ -48,6 +49,10 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         height: QUICK_ACTIONS_HEIGHT,
         marginLeft: 8,
+    },
+    scroll: {
+        flexGrow: 0,
+        flexShrink: 1,
     },
 });
 
@@ -95,13 +100,22 @@ export default function QuickActions({
     };
 
     return (
-        <View
+        <ScrollView
             testID={testID}
-            style={style.quickActionsContainer}
+            horizontal={true}
+            keyboardShouldPersistTaps='handled'
+            showsHorizontalScrollIndicator={false}
+            style={style.scroll}
+            contentContainerStyle={style.quickActionsContainer}
         >
             <AttachmentAction
                 testID={attachmentActionTestID}
                 {...uploadProps}
+            />
+            <VoiceMessageAction
+                testID={`${testID}.voice_message_action`}
+                disabled={!canUploadFiles || fileCount >= maxFileCount}
+                onUploadFiles={addFiles}
             />
             <InputAction
                 testID={atInputActionTestID}
@@ -145,6 +159,6 @@ export default function QuickActions({
                     updatePostBoRStatus={updatePostBoRStatus}
                 />
             }
-        </View>
+        </ScrollView>
     );
 }

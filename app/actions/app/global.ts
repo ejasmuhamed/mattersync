@@ -9,6 +9,7 @@ import {logError} from '@utils/log';
 
 import type {EphemeralModeAuditEvent} from '@constants/ephemeral_mode';
 import type GlobalModel from '@typings/database/models/app/global';
+import type {PlaybackRate} from '@utils/audio_playback';
 
 const {APP: {GLOBAL}} = MM_TABLES;
 
@@ -23,6 +24,10 @@ export const storeGlobal = async (id: string, value: unknown, prepareRecordsOnly
         logError('storeGlobal', error);
         return {error};
     }
+};
+
+export const storePreferredAudioPlaybackRate = async (rate: PlaybackRate) => {
+    return storeGlobal(GLOBAL_IDENTIFIERS.AUDIO_PLAYBACK_RATE, rate);
 };
 
 export const storePreauthSecretMigrationDone = async () => {

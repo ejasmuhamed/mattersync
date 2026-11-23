@@ -273,6 +273,7 @@ function DraftInput({
                     />
                     <View style={style.actionsContainer}>
                         <QuickActions
+                            key={`${serverUrl}:${channelId}:${rootId}`}
                             testID={quickActionsTestID}
                             channelId={channelId}
                             fileCount={files.length}

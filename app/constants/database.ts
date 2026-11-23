@@ -105,6 +105,7 @@ export const GLOBAL_IDENTIFIERS = {
     PREAUTH_SECRET_MIGRATION: 'preauthSecretMigration',
     PUSH_SIGNING_KEY: 'pushSigningKey',
     EPHEMERAL_MODE_AUDIT_QUEUE: 'ephemeralModeAuditQueue',
+    AUDIO_PLAYBACK_RATE: 'audioPlaybackRate',
 };
 
 export enum OperationType {

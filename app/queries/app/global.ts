@@ -7,6 +7,7 @@ import {switchMap} from 'rxjs/operators';
 
 import {GLOBAL_IDENTIFIERS, MM_TABLES} from '@constants/database';
 import DatabaseManager from '@database/manager';
+import {DEFAULT_PREFERRED_PLAYBACK_RATE, isPlaybackRate, type PlaybackRate} from '@utils/audio_playback';
 
 import type {EphemeralModeAuditEvent} from '@constants/ephemeral_mode';
 import type GlobalModel from '@typings/database/models/app/global';
@@ -40,6 +41,12 @@ export const queryGlobalValue = (key: string) => {
     } catch {
         return undefined;
     }
+};
+
+export const getPreferredAudioPlaybackRate = async (): Promise<PlaybackRate> => {
+    const records = await queryGlobalValue(GLOBAL_IDENTIFIERS.AUDIO_PLAYBACK_RATE)?.fetch();
+    const value = records?.[0]?.value;
+    return isPlaybackRate(value) ? value : DEFAULT_PREFERRED_PLAYBACK_RATE;
 };
 
 export const getOnboardingViewed = async (): Promise<boolean> => {
